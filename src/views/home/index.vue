@@ -48,6 +48,10 @@
               <Icon type="md-reorder" size="24" />
               <div>{{ $t('layers') }}</div>
             </MenuItem>
+            <MenuItem :name="4" class="menu-item">
+              <Icon type="md-reorder" size="24" />
+              <div>{{ $t('batch') }}</div>
+            </MenuItem>
           </Menu>
           <div class="content">
             <!-- 生成模板 -->
@@ -209,17 +213,19 @@ export default {
     },
   },
   mounted() {
+    // 创建画布对象
     this.canvas = new fabric.Canvas('canvas', {
       fireRightClick: true, // 启用右键，button的数字为3
       stopContextMenu: true, // 禁止默认右键菜单
       controlsAboveOverlay: true, // 超出clipPath后仍然展示控制条
     });
+    // 设置代理
     canvas.c = this.canvas;
+    // 发布订阅事件
     event.init(canvas.c);
+    // 编辑器初始化
     canvas.editor = new Editor(canvas.c);
-
     canvas.c.renderAll();
-
     this.show = true;
     this.$Spin.hide();
   },

@@ -33,11 +33,17 @@ class EditorWorkspace {
     if (!workspaceEl) {
       throw new Error('element #workspace is missing, plz check!');
     }
+    // 工作空间元素
     this.workspaceEl = workspaceEl;
+    // 工作空间对象
     this.workspace = null;
+    // 配置选项
     this.option = option;
+    // 是否时拖拽模式
     this.dragMode = false;
+    // 初始化背景
     this._initBackground();
+    // 初始化工作空间
     this._initWorkspace();
     this._initResizeObserve();
     this._initDring();
@@ -53,12 +59,14 @@ class EditorWorkspace {
   // 初始化画布
   _initWorkspace() {
     const { width, height } = this.option;
+    // 创建一个矩形作为工作空间
     const workspace = new fabric.Rect({
       fill: 'rgba(255,255,255,1)',
       width,
       height,
       id: 'workspace',
     });
+    // 设置工作空间不可修改，不显示操作控件，并且不能用于操作对象
     workspace.set('selectable', false);
     workspace.set('hasControls', false);
     workspace.hoverCursor = 'default';

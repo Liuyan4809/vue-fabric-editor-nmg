@@ -32,13 +32,19 @@ class Editor extends EventEmitter {
 
     this.canvas = canvas;
     this.editorWorkspace = null;
-
+    // 初始化对齐辅助线
     initAligningGuidelines(canvas);
+    // 初始化快捷键功能
     initHotkeys(canvas, this);
+    // 初始化控制条
     initControls(canvas);
+    // 初始化旋转
     initControlsRotate(canvas);
+    // 新建 编辑组内文字
     new EditorGroupText(canvas);
+    // 初始化 居中方式
     this.centerAlign = new InitCenterAlign(canvas);
+    // 初始化网格
     this.ruler = initRuler(canvas);
   }
 
