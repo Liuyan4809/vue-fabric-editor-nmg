@@ -12,7 +12,6 @@ import { createHtmlPlugin } from 'vite-plugin-html';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 const autoprefixer = require('autoprefixer');
 const path = require('path');
-import eslintPlugin from 'vite-plugin-eslint'; //导入包
 import vueSetupExtend from 'vite-plugin-vue-setup-extend-plus';
 import autoImports from 'unplugin-auto-import/vite';
 
@@ -26,15 +25,8 @@ const config = ({ mode }) => {
       vue(),
       autoImports({
         imports: ['vue'],
-        eslintrc: {
-          enabled: true,
-        },
       }),
       vueSetupExtend(),
-      // 增加下面的配置项,这样在运行时就能检查eslint规范
-      eslintPlugin({
-        include: ['src/**/*.js', 'src/**/*.vue', 'src/*.js', 'src/*.vue'],
-      }),
       vueJsx({
         // options are passed on to @vue/babel-plugin-jsx
       }),
