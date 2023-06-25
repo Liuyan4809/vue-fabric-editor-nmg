@@ -31,10 +31,10 @@ import { downFontByJSON } from '@/utils/utils';
 // import axios from 'axios';
 import { Spin, Message } from 'view-ui-plus';
 import { useI18n } from 'vue-i18n';
-import aJSON from '@/template/a/a.json';
-import aImg from '@/template/a/a.png';
-import bJSON from '@/template/b/b.json';
-import bImg from '@/template/b/b.png';
+import aJSON from '@/template/a/a1.json';
+import aImg from  '@/template/a/a1.png';
+import bJSON from '@/template/b/b1.json';
+import bImg from  '@/template/b/b1.png';
 
 // const repoSrc = import.meta.env.APP_REPO;
 const { t } = useI18n();

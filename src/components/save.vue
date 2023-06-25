@@ -25,9 +25,28 @@
           <DropdownItem name="saveImg">{{ $t('save_as_picture') }}</DropdownItem>
           <DropdownItem name="saveSvg">{{ $t('save_as_svg') }}</DropdownItem>
           <DropdownItem name="saveJson" divided>{{ $t('save_as_json') }}</DropdownItem>
+          <DropdownItem name="uploadToTemplateLibrary" divided>上传至模板库</DropdownItem>
         </DropdownMenu>
       </template>
     </Dropdown>
+    <Modal v-model="uploadToTemplateLibraryVisible" title="上传至模板库" width="60%" @on-ok="onClickOk">
+      <Form :model="currentForm.tableData">
+        <Table :columns="columns" :data="currentForm.tableData">
+          <template #id="{ row }">
+            <img :src="row._element.currentSrc" alt="" style="max-width: 100px; max-height: 100px" />
+          </template>
+          <template #replace="{ row, index }">
+            <FormItem>
+              <Select v-model="currentForm.tableData[index].replaceType" :max-tag-count="2" transfer clearable>
+                <Option v-for="item in replaceTypeOptions" :value="item.value" :key="item.value">
+                {{ item.label }}
+                </Option>
+              </Select>
+            </FormItem>
+          </template>
+        </Table>
+      </Form>
+    </Modal>
   </div>
 </template>
 
@@ -41,6 +60,55 @@ import { useI18n } from 'vue-i18n';
 const { t } = useI18n();
 
 const { canvas } = useSelect();
+
+const currentForm = ref({
+  tableData: [],
+});
+
+const columns = ref([
+  {
+    title: 'id',
+    key: 'id',
+    slot: 'id',
+  },
+  {
+    title: 'name',
+    key: 'name',
+  },
+  {
+    title: '类型',
+    key: 'type',
+  },
+  {
+    title: '替换成分',
+    key: 'replace',
+    slot: 'replace',
+    minWidth: 200,
+  },
+]);
+
+const replaceTypeOptions = ref([
+  {
+    label: '作为标题元素',
+    value: 'title'
+  },
+  {
+    label: '作为描述替换元素',
+    value: 'describe'
+  },
+  {
+    label: '作为图片替换元素',
+    value: 'image'
+  },
+  {
+    label: '作为logo替换元素',
+    value: 'logo'
+  },
+])
+
+// 上传至模板库模态框是否可见
+let uploadToTemplateLibraryVisible = ref(false);
+
 const cbMap = {
   clipboard() {
     const jsonStr = canvas.editor.getJson();
@@ -90,6 +158,17 @@ const cbMap = {
     downFile(dataUrl, 'png');
     canvas.editor.ruler.showGuideline();
   },
+
+  uploadToTemplateLibrary() {
+    uploadToTemplateLibraryVisible.value = true;
+    const objs = canvas.c.getObjects().filter((item) => 'image' === item.type);
+    currentForm.value.tableData = [
+      ...objs.map(({ id, name, type, _element, replaceType }) => ({ id, name, type, _element, replaceType })),
+    ];
+    const dataUrl = canvas.editor.getJson();
+    // JSON.stringify(dataUrl, null, '\t')
+    console.log('uploadToTemplateLibrary', dataUrl);
+  },
 };
 
 const saveWith = debounce(function (type) {
@@ -108,6 +187,35 @@ const clear = () => {
   canvas.c.discardActiveObject();
   canvas.c.renderAll();
 };
+
+const onClickOk = () => {
+
+  let allObjs = canvas.c.getObjects();
+  let tableData = currentForm.value.tableData
+
+  // 设置替换类型
+  for (let i = 0, len = allObjs.length; i < len; i++) {
+    let current = allObjs[i];
+    let replaceItem = tableData.find(item => item.id === current.id)
+    current.set({
+      replaceType: replaceItem ? replaceItem.replaceType : null
+    })
+  }
+
+  const dataUrl = canvas.editor.getJson();
+  // JSON.stringify(dataUrl, null, '\t')
+  console.log('onClickOk', dataUrl);
+  const fileStr = `data:text/json;charset=utf-8,${encodeURIComponent(
+    JSON.stringify(dataUrl, null, '\t')
+  )}`;
+
+  cbMap.saveImg()
+
+  setTimeout(function() {
+    downFile(fileStr, 'json');
+  }, 1000)
+
+}
 
 const beforeClear = () => {
   Modal.confirm({

@@ -48,10 +48,6 @@
               <Icon type="md-reorder" size="24" />
               <div>{{ $t('layers') }}</div>
             </MenuItem>
-            <MenuItem :name="4" class="menu-item">
-              <Icon type="md-reorder" size="24" />
-              <div>{{ $t('batch') }}</div>
-            </MenuItem>
           </Menu>
           <div class="content">
             <!-- 生成模板 -->

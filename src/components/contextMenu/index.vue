@@ -34,6 +34,12 @@ export default {
       menuList: [
         // 菜单
         {
+          type: 'batchReplacement',
+          activeName: 'batchReplacement',
+          text: '批量替换',
+          subText: 'BatchReplacement',
+        },
+        {
           type: 'copy',
           activeName: 'copy',
           text: this.$t('mouseMenu.copy'),
@@ -188,7 +194,12 @@ export default {
       if (!active) return this.hideMenu();
       const canvas = this.canvas.c;
       const activeObject = canvas.getActiveObjects();
+
       switch (active) {
+        // 批量替换
+        case 'batchReplacement':
+          console.log('batchReplacement');
+          break;
         case 'copy':
           this.canvas.editor.clone();
           break;

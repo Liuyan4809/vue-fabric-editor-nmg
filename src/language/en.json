@@ -34,7 +34,6 @@
   "import_files": "Import files",
   "select_json": "Select JSON",
   "repleaceImg": "repleace Image",
-  "batch": "batch",
   "filters": {
     "simple": "Simple Filter",
     "complex": "Complex Filter",
