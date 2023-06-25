@@ -28,7 +28,7 @@
           <lang></lang>
         </div>
       </Header>
-      <Content style="display: flex; height: calc(100vh - 64px)">
+      <Content style="display: flex;height: calc(100vh - 64px);">
         <div v-if="show" style="width: 380px; height: 100%; background: #fff; display: flex">
           <Menu
             :active-name="menuActive"
@@ -77,7 +77,8 @@
           </div>
         </div>
         <!-- 属性区域 380-->
-        <div style="width: 530px; height: 100%; padding: 10px; overflow-y: auto; background: #fff">
+        <div class="right-pane is-batch-result">
+
           <div v-if="show" style="padding-top: 10px">
             <!-- 新增字体样式使用 -->
             <!-- <Button @click="getFontJson" size="small">获取字体数据</Button> -->
@@ -98,7 +99,9 @@
             <!-- 翻转 -->
             <flip></flip>
           </div>
+
           <attribute v-if="show"></attribute>
+
         </div>
       </Content>
     </Layout>
@@ -359,4 +362,20 @@ export default {
     calc(var(--size) + var(--offsetX)) calc(var(--size) + var(--offsetY));
   background-size: calc(var(--size) * 2) calc(var(--size) * 2);
 }
+
+// 右侧面板
+.right-pane {
+  width: 530px;
+  height: 100%;
+  padding: 10px;
+  overflow-y: auto;
+  background: #fff;
+
+  // 批量成果物
+  &.is-batch-result {
+    width: 830px;
+  }
+}
+
+
 </style>

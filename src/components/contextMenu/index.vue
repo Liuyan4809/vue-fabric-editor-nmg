@@ -18,8 +18,25 @@
 import { isEmpty, debounce } from 'lodash-es';
 import select from '@/mixins/select';
 import menuItem from './menuItem.vue';
+import aJSON from '@/template/a/a1.json';
+import aImg from  '@/template/a/a1.png';
+import bJSON from '@/template/b/b1.json';
+import bImg from  '@/template/b/b1.png';
+import {getImgStr, insertImgFile, selectFiles} from "@/utils/utils";
+import {v4 as uuid} from "uuid";
 
 const canvasDom = document.getElementById('canvas') || null;
+
+function downFile(fileStr, fileType) {
+  const anchorEl = document.createElement('a');
+  anchorEl.href = fileStr;
+  anchorEl.download = `${uuid()}.${fileType}`;
+  document.body.appendChild(anchorEl); // required for firefox
+  anchorEl.click();
+  anchorEl.remove();
+}
+
+
 export default {
   name: 'mouseMenu',
   inject: ['canvas', 'fabric'],
@@ -189,22 +206,71 @@ export default {
       }
     },
 
-    handleMenu(e) {
+    async handleMenu(e) {
+      const vm = this
       const active = e.target.dataset.active || e.srcElement.dataset.active;
       if (!active) return this.hideMenu();
       const canvas = this.canvas.c;
-      const activeObject = canvas.getActiveObjects();
+      const activeObjects = canvas.getActiveObjects();
 
       switch (active) {
         // 批量替换
         case 'batchReplacement':
-          console.log('batchReplacement');
+          let activeObject = this.canvas.c.getActiveObjects()[0];
+          if (activeObject && activeObject.type === 'image') {
+            // 图片
+            const files = await selectFiles({ accept: 'image/*' });
+            vm.canvas.editor.ruler.hideGuideline();
+            const workspace = this.canvas.c.getObjects().find((item) => item.id === 'workspace');
+
+            // 批量生成图片
+            for (let i = 0, len = files.length; i < len; i++) {
+
+                let file = files[i]
+                // 转base64字符串
+                const fileStr = await getImgStr(file);
+                // 字符串转El
+                const imgEl = await insertImgFile(fileStr);
+                // 重新获取
+                activeObject = this.canvas.c.getActiveObjects()[0];
+                // 获取被替换元素大小
+                const width = activeObject.get('width');
+                const height = activeObject.get('height');
+                const scaleX = activeObject.get('scaleX');
+                const scaleY = activeObject.get('scaleY');
+
+                // 替换图片
+                activeObject.setSrc(imgEl.src, () => {
+                  activeObject.set('scaleX', (width * scaleX) / imgEl.width);
+                  activeObject.set('scaleY', (height * scaleY) / imgEl.height);
+                  vm.canvas.c.renderAll();
+
+                  // 下载图片
+                  const option = {
+                    name: 'New Image',
+                    format: 'png',
+                    quality: 1,
+                    left: workspace.left,
+                    top: workspace.top,
+                    width: workspace.width,
+                    height: workspace.height,
+                  };
+                  vm.canvas.c.setViewportTransform([1, 0, 0, 1, 0, 0]);
+                  const dataUrl = vm.canvas.c.toDataURL(option);
+                  downFile(dataUrl, 'png');
+                  vm.canvas.editor.ruler.showGuideline();
+                });
+                imgEl.remove();
+              }
+
+            vm.canvas.editor.ruler.showGuideline();
+          }
           break;
         case 'copy':
           this.canvas.editor.clone();
           break;
         case 'delete':
-          activeObject && activeObject.map((item) => canvas.remove(item));
+          activeObjects && activeObjects.map((item) => canvas.remove(item));
           canvas.requestRenderAll();
           canvas.discardActiveObject();
           break;
