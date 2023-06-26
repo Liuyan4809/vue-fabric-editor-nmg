@@ -48,6 +48,10 @@
               <Icon type="md-reorder" size="24" />
               <div>{{ $t('layers') }}</div>
             </MenuItem>
+            <MenuItem :name="4" class="menu-item">
+              <Icon type="md-trending-up" size="24" />
+              <div>批量创建</div>
+            </MenuItem>
           </Menu>
           <div class="content">
             <!-- 生成模板 -->
